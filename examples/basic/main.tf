@@ -18,7 +18,7 @@ module "cluster" {
     }
   }
 
-  control_plane_nodes = {
+  controlplane_nodes = {
     "cp1" = {
       core_count = 2
       disk_gb    = 20
@@ -39,6 +39,33 @@ module "cluster" {
       memory_mb  = 4 * 1024
       node_ip    = "192.168.144.223"
       pve_host   = "pve03"
+    }
+  }
+
+  worker_nodes = {
+    "w1" = {
+      core_count    = 8
+      disk_gb       = 20
+      extra_disk_gb = 500
+      memory_mb     = 48 * 1024
+      node_ip       = "192.168.144.231"
+      pve_host      = "pve01"
+    }
+    "w2" = {
+      core_count    = 8
+      disk_gb       = 20
+      extra_disk_gb = 500
+      memory_mb     = 48 * 1024
+      node_ip       = "192.168.144.232"
+      pve_host      = "pve02"
+    }
+    "w3" = {
+      core_count    = 14
+      disk_gb       = 20
+      extra_disk_gb = 500
+      memory_mb     = 48 * 1024
+      node_ip       = "192.168.144.233"
+      pve_host      = "pve03"
     }
   }
 }

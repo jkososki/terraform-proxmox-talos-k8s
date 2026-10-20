@@ -199,7 +199,7 @@ module "cluster" {
     }
   }
 
-  control_plane_nodes = {
+  controlplane_nodes = {
     "cp1" = {
       core_count = 2
       disk_gb    = 20
@@ -222,6 +222,33 @@ module "cluster" {
       pve_host   = "pve03"
     }
   }
+
+  worker_nodes = {
+    "w1" = {
+      core_count    = 8
+      disk_gb       = 20
+      extra_disk_gb = 500
+      memory_mb     = 48 * 1024
+      node_ip       = "192.168.144.231"
+      pve_host      = "pve01"
+    }
+    "w2" = {
+      core_count    = 8
+      disk_gb       = 20
+      extra_disk_gb = 500
+      memory_mb     = 48 * 1024
+      node_ip       = "192.168.144.232"
+      pve_host      = "pve02"
+    }
+    "w3" = {
+      core_count    = 14
+      disk_gb       = 20
+      extra_disk_gb = 500
+      memory_mb     = 48 * 1024
+      node_ip       = "192.168.144.233"
+      pve_host      = "pve03"
+    }
+  }
 }
 ```
 
@@ -241,7 +268,7 @@ module "cluster" {
 | <a name="input_cilium_version"></a> [cilium\_version](#input\_cilium\_version) | Cilium Helm chart version to install as the CNI. | `string` | `"1.20.3"` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the Talos and Kubernetes cluster. | `string` | `"homelab"` | no |
 | <a name="input_cluster_vip"></a> [cluster\_vip](#input\_cluster\_vip) | The virtual IPv4 address (no scheme or port) that serves as the cluster endpoint. | `string` | `"192.168.1.100"` | no |
-| <a name="input_control_plane_nodes"></a> [control\_plane\_nodes](#input\_control\_plane\_nodes) | Control plane nodes keyed by hostname. Each sets CPU cores, disk and optional extra disk size (GB), memory (MB), static IP, and the Proxmox host (a key of pve\_hosts) it runs on. | <pre>map(object({<br/>    core_count    = number<br/>    disk_gb       = number<br/>    extra_disk_gb = optional(number, 0)<br/>    memory_mb     = number<br/>    node_ip       = string<br/>    pve_host      = string<br/>  }))</pre> | n/a | yes |
+| <a name="input_controlplane_nodes"></a> [controlplane\_nodes](#input\_controlplane\_nodes) | Control plane nodes keyed by hostname. Each sets CPU cores, disk and optional extra disk size (GB), memory (MB), static IP, and the Proxmox host (a key of pve\_hosts) it runs on. | <pre>map(object({<br/>    core_count    = number<br/>    disk_gb       = number<br/>    extra_disk_gb = optional(number, 0)<br/>    memory_mb     = number<br/>    node_ip       = string<br/>    pve_host      = string<br/>  }))</pre> | n/a | yes |
 | <a name="input_gateway_ip"></a> [gateway\_ip](#input\_gateway\_ip) | IPv4 address of the network gateway used by all nodes. | `string` | `"192.168.1.1"` | no |
 | <a name="input_iso_datastore"></a> [iso\_datastore](#input\_iso\_datastore) | Storage name for ISO images | `string` | `"local"` | no |
 | <a name="input_kubernetes_version"></a> [kubernetes\_version](#input\_kubernetes\_version) | Kubernetes version | `string` | `"1.37.1"` | no |
@@ -249,6 +276,7 @@ module "cluster" {
 | <a name="input_talos_system_extensions"></a> [talos\_system\_extensions](#input\_talos\_system\_extensions) | A list of talos system extensions that will be included in the image.<br/>https://github.com/siderolabs/extensions | `list(string)` | `[]` | no |
 | <a name="input_talos_version"></a> [talos\_version](#input\_talos\_version) | Talos linux version | `string` | `"1.14.3"` | no |
 | <a name="input_vm_datastore_id"></a> [vm\_datastore\_id](#input\_vm\_datastore\_id) | Storage name for VM/Snippets | `string` | `"local-lvm"` | no |
+| <a name="input_worker_nodes"></a> [worker\_nodes](#input\_worker\_nodes) | Worker nodes keyed by hostname. Each sets CPU cores, disk and optional extra disk size (GB), memory (MB), static IP, and the Proxmox host (a key of pve\_hosts) it runs on. | <pre>map(object({<br/>    core_count    = number<br/>    disk_gb       = number<br/>    extra_disk_gb = optional(number, 0)<br/>    memory_mb     = number<br/>    node_ip       = string<br/>    pve_host      = string<br/>  }))</pre> | `{}` | no |
 ## Outputs
 
 | Name | Description |

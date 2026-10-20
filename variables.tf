@@ -76,7 +76,7 @@ variable "cluster_vip" {
   }
 }
 
-variable "control_plane_nodes" {
+variable "controlplane_nodes" {
   description = "Control plane nodes keyed by hostname. Each sets CPU cores, disk and optional extra disk size (GB), memory (MB), static IP, and the Proxmox host (a key of pve_hosts) it runs on."
   type = map(object({
     core_count    = number
@@ -86,6 +86,20 @@ variable "control_plane_nodes" {
     node_ip       = string
     pve_host      = string
   }))
+}
+
+variable "worker_nodes" {
+  description = "Worker nodes keyed by hostname. Each sets CPU cores, disk and optional extra disk size (GB), memory (MB), static IP, and the Proxmox host (a key of pve_hosts) it runs on."
+  type = map(object({
+    core_count    = number
+    disk_gb       = number
+    extra_disk_gb = optional(number, 0)
+    memory_mb     = number
+    node_ip       = string
+    pve_host      = string
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "cilium_version" {

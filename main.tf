@@ -40,7 +40,7 @@ resource "talos_machine_secrets" "this" {
 }
 
 locals {
-  cp_nodes = sort(keys(var.control_plane_nodes))
+  cp_nodes = sort(keys(var.controlplane_nodes))
 }
 
 data "helm_template" "cilium" {
@@ -53,7 +53,7 @@ data "helm_template" "cilium" {
   skip_tests   = true
 
   values = [yamlencode({
-    k8sServiceHost       = var.control_plane_nodes[local.cp_nodes[0]].node_ip
+    k8sServiceHost       = var.controlplane_nodes[local.cp_nodes[0]].node_ip
     k8sServicePort       = 6443
     kubeProxyReplacement = true
 
@@ -90,7 +90,7 @@ data "helm_template" "cilium" {
 module "control_plane" {
   source = "./modules/talos-vm"
 
-  for_each = var.control_plane_nodes
+  for_each = var.controlplane_nodes
 
   cidr               = var.cidr
   cluster_name       = var.cluster_name
@@ -113,16 +113,44 @@ module "control_plane" {
   vm_datastore_id    = var.vm_datastore_id
 }
 
+module "worker" {
+  source = "./modules/talos-vm"
+
+  for_each = var.worker_nodes
+
+  cidr               = var.cidr
+  cluster_name       = var.cluster_name
+  cluster_vip        = var.cluster_vip
+  core_count         = each.value.core_count
+  disk_gb            = each.value.disk_gb
+  extra_disk_gb      = each.value.extra_disk_gb
+  gateway_ip         = var.gateway_ip
+  image_id           = proxmox_download_file.talos_img[each.value.pve_host].id
+  iso_datastore_id   = var.iso_datastore
+  kubernetes_version = var.kubernetes_version
+  machine_secrets    = talos_machine_secrets.this.machine_secrets
+  machine_type       = "worker"
+  memory_mb          = each.value.memory_mb
+  node_hostname      = each.key
+  node_ip            = each.value.node_ip
+  pve_host           = each.value.pve_host
+  talos_version      = var.talos_version
+  vm_datastore_id    = var.vm_datastore_id
+}
+
 locals {
   node_ips = [
-    for node_name, node in var.control_plane_nodes : node.node_ip
+    for node_name, node in var.controlplane_nodes : node.node_ip
+  ]
+  worker_node_ips = [
+    for node_name, node in var.worker_nodes : node.node_ip
   ]
 }
 
 data "talos_client_configuration" "this" {
   cluster_name         = var.cluster_name
   client_configuration = talos_machine_secrets.this.client_configuration
-  nodes                = local.node_ips
+  nodes                = concat(local.node_ips, local.worker_node_ips)
   endpoints            = local.node_ips
 }
 

@@ -46,6 +46,17 @@ locals {
     manifest   = var.inline_manifests
   })
 
+  controlplane_patches = compact([
+    local.patch_layer2_config,
+    var.inline_manifests == null || var.inline_manifests == "" ? null : local.patch_inline_manifests,
+    local.patch_kube_proxy,
+  ])
+
+  common_patches = [
+    local.patch_link_config,
+    local.patch_flannel,
+    local.patch_hostname,
+  ]
 }
 
 data "talos_machine_configuration" "this" {
@@ -58,14 +69,10 @@ data "talos_machine_configuration" "this" {
   machine_secrets  = var.machine_secrets
   machine_type     = var.machine_type
 
-  config_patches = compact([
-    local.patch_link_config,
-    local.patch_layer2_config,
-    local.patch_flannel,
-    local.patch_kube_proxy,
-    local.patch_hostname,
-    var.inline_manifests == null || var.inline_manifests == "" ? null : local.patch_inline_manifests
-  ])
+  config_patches = compact(concat(
+    local.common_patches,
+    var.machine_type == "controlplane" ? local.controlplane_patches : []
+  ))
 }
 
 locals {
