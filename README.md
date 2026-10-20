@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A Terraform / OpenTofu module that provisions a highly available [Kubernetes](https://kubernetes.io/) control plane on [Talos Linux](https://www.talos.dev/), running as virtual machines on [Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview).
+A Terraform / OpenTofu module that provisions a highly available [Kubernetes](https://kubernetes.io/) cluster, with control plane and worker nodes, on [Talos Linux](https://www.talos.dev/), running as virtual machines on [Proxmox VE](https://www.proxmox.com/en/products/proxmox-virtual-environment/overview).
 
 ## Table of Contents
 
@@ -33,6 +33,7 @@ A Terraform / OpenTofu module that provisions a highly available [Kubernetes](ht
 
 - Builds a Talos image through the [Image Factory](https://factory.talos.dev/) and downloads it to each Proxmox host.
 - Creates one Talos control plane VM per entry in `control_plane_nodes`, pinned to the Proxmox host you choose.
+- Optionally creates one Talos worker VM per entry in `worker_nodes`, with an optional extra data disk, also pinned to a Proxmox host.
 - Bootstraps the cluster and exposes a shared virtual IP (VIP) as the Kubernetes API endpoint.
 - Installs [Cilium](https://cilium.io/) as the CNI, with kube-proxy replacement, Gateway API, and L2 announcements enabled.
 - Always includes the `qemu-guest-agent` and `util-linux-tools` system extensions. Add more with `talos_system_extensions`.
@@ -40,7 +41,6 @@ A Terraform / OpenTofu module that provisions a highly available [Kubernetes](ht
 
 ## Limitations
 
-- Only control plane nodes are provisioned. Worker nodes are not yet supported.
 - Images are built for `amd64` only.
 - Nodes use static IP addresses, and the VIP must be an unused address in the same subnet as the nodes.
 
@@ -59,7 +59,7 @@ A Terraform / OpenTofu module that provisions a highly available [Kubernetes](ht
 
 - A Proxmox VE node or cluster. The [basic example](examples/basic) uses a three-node cluster.
 - Network access from the machine running the module to the Proxmox API (port 8006) and to the nodes over SSH.
-- Static IP addresses for each control plane node, plus one for the VIP.
+- Static IP addresses for each control plane and worker node, plus one for the VIP.
 
 ## Proxmox Setup
 
