@@ -39,54 +39,6 @@ resource "talos_machine_secrets" "this" {
   talos_version = var.talos_version
 }
 
-locals {
-  cp_nodes = sort(keys(var.controlplane_nodes))
-}
-
-data "helm_template" "cilium" {
-  chart        = "oci://quay.io/cilium/charts/cilium"
-  kube_version = var.kubernetes_version
-  name         = "cilium"
-  namespace    = "kube-system"
-  version      = var.cilium_version
-  include_crds = true
-  skip_tests   = true
-
-  values = [yamlencode({
-    k8sServiceHost       = var.controlplane_nodes[local.cp_nodes[0]].node_ip
-    k8sServicePort       = 6443
-    kubeProxyReplacement = true
-
-    cgroup = {
-      autoMount = { enabled = false }
-      hostRoot  = "/sys/fs/cgroup"
-    }
-
-    gatewayAPI = {
-      enabled = true
-    }
-
-    ipam = {
-      mode = "kubernetes"
-    }
-
-    l2announcements = {
-      enabled = true
-    }
-
-    operator = {
-      replicas = min(length(local.cp_nodes), 2)
-    }
-
-    securityContext = {
-      capabilities = {
-        ciliumAgent      = ["CHOWN", "KILL", "NET_ADMIN", "NET_RAW", "IPC_LOCK", "SYS_ADMIN", "SYS_RESOURCE", "DAC_OVERRIDE", "FOWNER", "SETGID", "SETUID"]
-        cleanCiliumState = ["NET_ADMIN", "SYS_ADMIN", "SYS_RESOURCE"]
-      }
-    }
-  })]
-}
-
 module "control_plane" {
   source = "./modules/talos-vm"
 
@@ -100,7 +52,7 @@ module "control_plane" {
   extra_disk_gb      = lookup(each.value, "extra_disk_gb", 0)
   gateway_ip         = var.gateway_ip
   image_id           = proxmox_download_file.talos_img[each.value.pve_host].id
-  inline_manifests   = data.helm_template.cilium.manifest
+  inline_manifests   = var.inline_manifests
   iso_datastore_id   = var.iso_datastore
   kubernetes_version = var.kubernetes_version
   machine_secrets    = talos_machine_secrets.this.machine_secrets

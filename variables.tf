@@ -102,8 +102,8 @@ variable "worker_nodes" {
   nullable = false
 }
 
-variable "cilium_version" {
-  description = "Cilium Helm chart version to install as the CNI."
+variable "inline_manifests" {
+  description = "Any additional kubernetes manifests to deploy during provisioning."
   type        = string
-  default     = "1.20.3"
+  default     = null
 }

@@ -265,11 +265,11 @@ module "cluster" {
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_cidr"></a> [cidr](#input\_cidr) | Subnet prefix length applied to each node address (for example, 24). | `number` | `24` | no |
-| <a name="input_cilium_version"></a> [cilium\_version](#input\_cilium\_version) | Cilium Helm chart version to install as the CNI. | `string` | `"1.20.3"` | no |
 | <a name="input_cluster_name"></a> [cluster\_name](#input\_cluster\_name) | Name of the Talos and Kubernetes cluster. | `string` | `"homelab"` | no |
 | <a name="input_cluster_vip"></a> [cluster\_vip](#input\_cluster\_vip) | The virtual IPv4 address (no scheme or port) that serves as the cluster endpoint. | `string` | `"192.168.1.100"` | no |
 | <a name="input_controlplane_nodes"></a> [controlplane\_nodes](#input\_controlplane\_nodes) | Control plane nodes keyed by hostname. Each sets CPU cores, disk and optional extra disk size (GB), memory (MB), static IP, and the Proxmox host (a key of pve\_hosts) it runs on. | <pre>map(object({<br/>    core_count    = number<br/>    disk_gb       = number<br/>    extra_disk_gb = optional(number, 0)<br/>    memory_mb     = number<br/>    node_ip       = string<br/>    pve_host      = string<br/>  }))</pre> | n/a | yes |
 | <a name="input_gateway_ip"></a> [gateway\_ip](#input\_gateway\_ip) | IPv4 address of the network gateway used by all nodes. | `string` | `"192.168.1.1"` | no |
+| <a name="input_inline_manifests"></a> [inline\_manifests](#input\_inline\_manifests) | Any additional kubernetes manifests to deploy during provisioning. | `string` | `null` | no |
 | <a name="input_iso_datastore"></a> [iso\_datastore](#input\_iso\_datastore) | Storage name for ISO images | `string` | `"local"` | no |
 | <a name="input_kubernetes_version"></a> [kubernetes\_version](#input\_kubernetes\_version) | Kubernetes version | `string` | `"1.37.1"` | no |
 | <a name="input_pve_hosts"></a> [pve\_hosts](#input\_pve\_hosts) | Proxmox VE hosts that receive the Talos image. Map keys must match the Proxmox node names. | <pre>map(object({<br/>    name = string<br/>  }))</pre> | n/a | yes |
@@ -281,8 +281,10 @@ module "cluster" {
 
 | Name | Description |
 | ---- | ----------- |
+| <a name="output_controlplane_nodes"></a> [controlplane\_nodes](#output\_controlplane\_nodes) | Control plane node info. |
 | <a name="output_kubeconfig"></a> [kubeconfig](#output\_kubeconfig) | Kubeconfig for the new cluster. |
 | <a name="output_talosconfig"></a> [talosconfig](#output\_talosconfig) | Talos client configuration for use with talosctl. |
+| <a name="output_worker_nodes"></a> [worker\_nodes](#output\_worker\_nodes) | Worker node info. |
 <!-- END_TF_DOCS -->
 
 
