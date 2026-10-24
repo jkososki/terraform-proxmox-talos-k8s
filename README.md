@@ -257,7 +257,6 @@ module "cluster" {
 | Name | Version |
 | ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= v1.13.1 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | ~>3.3.0 |
 | <a name="requirement_proxmox"></a> [proxmox](#requirement\_proxmox) | ~> 0.116.1 |
 | <a name="requirement_talos"></a> [talos](#requirement\_talos) | ~> 0.12.0 |
 ## Inputs
