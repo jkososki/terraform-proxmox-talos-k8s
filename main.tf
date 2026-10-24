@@ -91,7 +91,7 @@ module "worker" {
 }
 
 locals {
-  node_ips = [
+  cp_node_ips = [
     for node_name, node in var.controlplane_nodes : node.node_ip
   ]
   worker_node_ips = [
@@ -102,21 +102,33 @@ locals {
 data "talos_client_configuration" "this" {
   cluster_name         = var.cluster_name
   client_configuration = talos_machine_secrets.this.client_configuration
-  nodes                = concat(local.node_ips, local.worker_node_ips)
-  endpoints            = local.node_ips
+  nodes                = concat(local.cp_node_ips, local.worker_node_ips)
+  endpoints            = local.cp_node_ips
 }
 
 resource "talos_machine_bootstrap" "this" {
   depends_on = [module.control_plane]
 
-  node                 = local.node_ips[0]
+  node                 = local.cp_node_ips[0]
   client_configuration = talos_machine_secrets.this.client_configuration
 }
 
-
-resource "talos_cluster_kubeconfig" "this" {
+# tflint-ignore: terraform_unused_declarations
+data "talos_cluster_health" "this" {
   depends_on = [talos_machine_bootstrap.this]
 
+  client_configuration = data.talos_client_configuration.this.client_configuration
+  control_plane_nodes  = local.cp_node_ips
+  worker_nodes         = local.worker_node_ips
+  endpoints            = [var.cluster_vip]
+  timeouts = {
+    read = "5m"
+  }
+}
+
+resource "talos_cluster_kubeconfig" "this" {
+  depends_on = [data.talos_cluster_health.this]
+
   client_configuration = talos_machine_secrets.this.client_configuration
-  node                 = local.node_ips[0]
+  node                 = local.cp_node_ips[0]
 }
